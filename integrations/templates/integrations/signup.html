@@ -1,0 +1,47 @@
+{% extends "integrations/base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+</head>
+<body onload="addActiveCLass()">
+<div class="container p-5 my-5 text-center border">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" name="username">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password1">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password2">
+      </div>
+      <button type="submit" class="btn btn-outline-dark">Submit</button>
+        {% csrf_token %}
+    </form>
+    </div>
+
+<div class="container">
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">
+                <p>{{ error|escape }}</p>
+            </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+</div>
+</body>
+<script>
+function addActiveCLass() {
+    var element = document.getElementById("signup");
+    element.classList.add("active");
+}
+</script>
+{% endblock content %}

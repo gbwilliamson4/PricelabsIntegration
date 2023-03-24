@@ -1,0 +1,20 @@
+{% extends "integrations/base.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+This is the properties page.
+<br>
+{% for property in all_properties %}
+    <a href="{% url 'property-detail' prop_pk=property.pk %}">{{ property.property_name }}</a>
+    <br>
+{% endfor %}
+</body>
+</html>
+
+{% endblock content %}
