@@ -6,9 +6,6 @@ import json
 
 def integrate(testing, moto_key, moto_secret, season_request, rates_request, pricelabs_api_key, pricelabs_id):
     # Info for http request
-    # basic = HTTPBasicAuth('ck_5b05e053bbced95b4f1b7af722236eee92e82490', 'cs_3a36127b3e9466144486c57e10ac743e175e9629')
-    # season_request = 'https://georgesdirectbookings.com/wp-json/mphb/v1/seasons/'
-    # rates_request = 'https://georgesdirectbookings.com/wp-json/mphb/v1/rates/'
     basic = HTTPBasicAuth(moto_key, moto_secret)
 
     # List of all dates we need to keep track of.
@@ -179,16 +176,6 @@ def motopress_rates_data(existing_seasons, existing_rates):
     return moto_dict
 
 
-# def create_all_seasons(list_dates, season_request, basic):
-#     for i in list_dates:
-#         create_season(i, season_request, basic)
-
-
-# def create_all_rates(existing_seasons, rates_request, basic):
-#     for i in existing_seasons:
-#         create_rate(i, rates_request, basic)
-
-
 def create_list_of_dates():
     '''Creats a list of dates thats used as a base to know if any dates need to be added to motopress or removed.'''
     list_dates = []
@@ -198,28 +185,6 @@ def create_list_of_dates():
         date_string = date_i.strftime('%Y-%m-%d')
         list_dates.append(date_string)
     return list_dates
-
-
-# def get_data(url, basic):
-#     '''This is the base function to get data from motopress. its used to get both season data and rates data.
-#     A bug I found is that the base url will only bring in 10 entries, so an extension to the url is added with a
-#     loop that will take it through 4 pages showing 100 records per page.'''
-#     # add in a loop here to go up to 4 pages
-#
-#     data = []
-#     #
-#     for i in range(1, 6):
-#         # extension = f'?context=view&page={i}&per_page=1'
-#         extension = f'?page={i}&per_page=100'
-#         full_url = url + extension
-#         response = requests.get(full_url, auth=basic)
-#         data.extend(response.json())
-#         # jprint(response.json())
-#
-#     # print('jprinting data line 155, 156:')
-#     # jprint(data)
-#     print('len of get_data:', len(data))
-#     return data
 
 
 def get_data(url, basic):
@@ -330,7 +295,6 @@ def create_rate(season_info, url, basic):
 
 
 def get_pricelabs_data(api_key, id):
-    # API key and id are hard coded
     url = "https://api.pricelabs.co/v1/listing_prices"
 
     payload = json.dumps({
@@ -359,15 +323,6 @@ def get_pricelabs_data(api_key, id):
 
     return dict_data
 
-
-# if __name__ == '__main__':
-#     # main(testing=True)
-#     moto_key = 'ck_5b05e053bbced95b4f1b7af722236eee92e82490'
-#     moto_secret = 'cs_3a36127b3e9466144486c57e10ac743e175e9629'
-#     season_request = 'https://georgesdirectbookings.com/wp-json/mphb/v1/seasons/'
-#     rates_request = 'https://georgesdirectbookings.com/wp-json/mphb/v1/rates/'
-#     pricelabs_api_key = 'Oqcgjf7PYZwNNBrgIXBDH48WWsmtIOrmPtffddLK'
-#     pricelabs_id = '690002913162585024'
 #
 #
 #     main(False, moto_key, moto_secret, season_request, rates_request, pricelabs_api_key, pricelabs_id)
