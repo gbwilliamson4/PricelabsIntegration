@@ -9,6 +9,9 @@ class Property(models.Model):
     def __str__(self):
         return self.property_name
 
+    class Meta:
+        verbose_name_plural = "Properties"
+
 
 class Property_Info(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
@@ -20,6 +23,9 @@ class Property_Info(models.Model):
     motopress_rates_request = models.CharField(max_length=200)
     property_notes = models.CharField(max_length=100, blank=True)
 
+    class Meta:
+        verbose_name_plural = "Property Info"
+
     # def __str__(self):
     #     return self.property
 
@@ -27,3 +33,6 @@ class Property_Info(models.Model):
 class History(models.Model):
     run_date = models.DateField(auto_now_add=True)
     property_name = models.ForeignKey(Property, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "History"
