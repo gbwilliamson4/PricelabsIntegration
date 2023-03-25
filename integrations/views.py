@@ -102,7 +102,7 @@ def run_integrator(request, prop_pk, info_pk):
 
     prop = Property.objects.get(pk=prop_pk)
 
-    if prop.user != request.user:
+    if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
     else:
         print('property is', prop)
