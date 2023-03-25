@@ -270,7 +270,7 @@ def create_rate(season_info, url, basic, accomodation_id, rates_id):
     # print('season_prices:', season_prices)
 
     text = {
-        "id": 4186,
+        "id": rates_id,
         "status": "active",
         "title": "Bearadise Booking Rate",
         "description": "Single rate - main post request",
