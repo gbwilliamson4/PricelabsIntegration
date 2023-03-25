@@ -4,6 +4,7 @@ from requests.auth import HTTPBasicAuth
 import json
 
 # One thing to note is you need to already have the season created.
+
 def integrate(testing, moto_key, moto_secret, season_request, rates_request, pricelabs_api_key, pricelabs_id,
          accomodation_id):
 
