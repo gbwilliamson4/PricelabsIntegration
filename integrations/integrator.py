@@ -4,7 +4,7 @@ from requests.auth import HTTPBasicAuth
 import json
 
 
-def integrate(testing, moto_key, moto_secret, season_request, rates_request, pricelabs_api_key, pricelabs_id):
+def integrate(testing, moto_key, moto_secret, season_request, rates_request, pricelabs_api_key, pricelabs_id, accomodation_id):
     # Info for http request
     basic = HTTPBasicAuth(moto_key, moto_secret)
 
@@ -27,7 +27,7 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
             pass
             season_response = create_season(i, season_request, basic)
             # print('season response: ', season_response.json())
-            create_rate(season_response.json(), rates_request, basic)
+            create_rate(season_response.json(), rates_request, basic, accomodation_id)
 
         for date in to_delete:
             season_id = delete_season(season_request, date, existing_seasons,
@@ -267,13 +267,13 @@ def create_season(season_date, url, basic):
     return response
 
 
-def create_rate(season_info, url, basic):
-    # !!! NOTE THAT THE ACCOMODATION TYPE ID IS HARD CODED !!!
+def create_rate(season_info, url, basic, accomodation_id):
+
     text = {
         "status": "active",
         "title": f"{season_info['end_date']} - main post request",
         "description": f"{season_info['end_date']} - main post request",
-        "accommodation_type_id": 921,
+        "accommodation_type_id": accomodation_id,
         "season_prices": [
             {
                 "priority": 0,

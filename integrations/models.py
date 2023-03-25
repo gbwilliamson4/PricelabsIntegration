@@ -21,6 +21,7 @@ class Property_Info(models.Model):
     motopress_secret = models.CharField(max_length=100)
     motopress_season_request = models.CharField(max_length=200)
     motopress_rates_request = models.CharField(max_length=200)
+    accomodation_id = models.IntegerField()
     property_notes = models.CharField(max_length=100, blank=True)
 
     class Meta:

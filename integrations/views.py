@@ -17,6 +17,8 @@ def index(request):
     # If user is authenticated, navigate to properties page. else, go to login.
     if request.user.is_authenticated:
         print('user is authenticated.')
+        if request.user.is_staff:
+            print('user is staff')
         return redirect('properties')
 
     else:
@@ -68,7 +70,10 @@ def logout_user(request):
 
 @login_required
 def properties(request):
-    all_properties = Property.objects.filter(user=request.user)
+    if request.user.is_staff:
+        all_properties = Property.objects.all()
+    else:
+        all_properties = Property.objects.filter(user=request.user)
     context = {'all_properties': all_properties}
     return render(request, 'integrations/properties.html', context)
 
@@ -77,7 +82,7 @@ def properties(request):
 def property_detail(request, prop_pk):
     prop = Property.objects.get(pk=prop_pk)
 
-    if prop.user != request.user:
+    if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
     else:
         property_info = Property_Info.objects.get(property=prop)
@@ -92,19 +97,9 @@ def property_detail(request, prop_pk):
 def run_integrator(request, prop_pk, info_pk):
     info = Property_Info.objects.get(pk=info_pk)
     # print(info)
-    pricelabs_key = info.pricelabs_key
-    pricelabs_id = info.pricelabs_id
-    moto_key = info.motopress_key
-    moto_secret = info.motopress_secret
-
-    # print(pricelabs_key)
-    # print(pricelabs_id)
-    # print(moto_key)
-    # print(moto_secret)
 
     print('this is running from within the run_integrator function')
 
-    # Testing
     prop = Property.objects.get(pk=prop_pk)
 
     if prop.user != request.user:
@@ -118,12 +113,10 @@ def run_integrator(request, prop_pk, info_pk):
         motopress_secret = prop_info.motopress_secret
         motopress_season_request = prop_info.motopress_season_request
         motopress_rates_request = prop_info.motopress_rates_request
-        property_notes = prop_info.property_notes
+        accomodation_id = prop_info.accomodation_id
 
         integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                  pricelabs_key, pricelabs_id)
-        # return HttpResponse('Update has completed successfully.')
-        # return reverse('property-detail', prop_pk)
+                  pricelabs_key, pricelabs_id, accomodation_id)
         history = History(property_name=prop)
         history.save()
         return redirect('property-detail', prop_pk)
