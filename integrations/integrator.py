@@ -181,7 +181,7 @@ def get_data(url, basic):
 
     for i in range(1, 16):
         # extension = f'?context=view&page={i}&per_page=1'
-        extension = f'?page={i}&per_page={25}'
+        extension = f'?page={i}&per_page={33}'
         full_url = url + extension
         response = requests.get(full_url, auth=basic)
         data.extend(response.json())
