@@ -3,11 +3,11 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 
+
 # One thing to note is you need to already have the season created.
 
 def integrate(testing, moto_key, moto_secret, season_request, rates_request, pricelabs_api_key, pricelabs_id,
-         accomodation_id):
-
+              accomodation_id):
     basic = HTTPBasicAuth(moto_key, moto_secret)
 
     # List of all dates we need to keep track of.
@@ -17,7 +17,7 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
         # Lets see real quick if we have any seasons.
         existing_seasons = get_data(season_request,
                                     basic)  # One thing to note, is this will come back as empty if the ones in there are only drafts and not published.
-        existing_rates = get_data(rates_request, basic)
+        existing_rates = get_rate_data(rates_request, basic)
         rates_id = existing_rates[0]['id']
 
         current_dates = [i['end_date'] for i in existing_seasons]
@@ -37,7 +37,7 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
         # After any seasons are added or deleted, we need to refresh the existing lists with updated data.
         existing_seasons = get_data(season_request,
                                     basic)
-        existing_rates = get_data(rates_request, basic)
+        existing_rates = get_rate_data(rates_request, basic)
         rates_id = existing_rates[0]['id']
         motopress_data = motopress_rates_data(existing_seasons,
                                               existing_rates)  # Returns a dictionary with end date as key, season_id as value.
@@ -52,9 +52,8 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
         existing_seasons = get_data(season_request,
                                     basic)  # I made a copy of this one and renamed it to have find_duplicates at the end.
 
-        existing_rates = get_data(rates_request, basic)
+        existing_rates = get_rate_data(rates_request, basic)
         rates_id = existing_rates[0]['id']
-
 
         motopress_data = motopress_rates_data(existing_seasons,
                                               existing_rates)  # Returns a dictionary with end date as key, season_id as value.
@@ -64,7 +63,6 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
 
         moto_data_to_add = compare_prices(motopress_data, pricelabls_data, rates_request, basic)
         create_rate(moto_data_to_add, rates_request, basic, accomodation_id, rates_id)
-
 
         # *** End testing ***
 
@@ -142,7 +140,6 @@ def compare_prices(motopress, pricelabs, rates_request,
     return rate_data_to_add
 
 
-
 def motopress_rates_data(existing_seasons, existing_rates):
     '''Uses the existing seasons and existing rates data to compile a dictionary that is used later to compare
     the motopress existing rates to what pricelabs has. It returns a dictionary with the key as the date and the
@@ -168,7 +165,7 @@ def create_list_of_dates():
     '''Creats a list of dates thats used as a base to know if any dates need to be added to motopress or removed.'''
     list_dates = []
     for i in range(-1, 366):
-    # for i in range(-1, 13):
+        # for i in range(-1, 13):
         date_i = datetime.datetime.today() + datetime.timedelta(days=i)
         date_string = date_i.strftime('%Y-%m-%d')
         list_dates.append(date_string)
@@ -253,6 +250,19 @@ def create_season(season_date, url, basic):
     print('status code', response)
     print('response: ', response.json())
     return response
+
+
+def get_rate_data(url, basic):
+    '''This is the base function to get data from motopress. its used to get both season data and rates data.
+    A bug I found is that the base url will only bring in 10 entries, so an extension to the url is added with a
+    loop that will take it through 4 pages showing 100 records per page.'''
+
+    data = []
+    response = requests.get(url, auth=basic)
+    data.extend(response.json())
+
+    print('len of get_rate_data:', len(data))
+    return data
 
 
 def create_rate(season_info, url, basic, accomodation_id, rates_id):
