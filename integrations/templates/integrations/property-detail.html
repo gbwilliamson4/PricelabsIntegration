@@ -5,11 +5,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ property_info.property }}</title>
 </head>
 <div class="container">
 <body>
-<h2>Property Detail Page</h2>
+<h2>Property Detail</h2>
 <br>
 
 <h4>{{ property_info.property }}</h4>
@@ -65,13 +65,15 @@
 
     <table>
         <tr>
-            <th>Property</th>
             <th>Date</th>
+            <th>Property</th>
+            <th>Notes</th>
         </tr>
         {% for prop in prop_history %}
             <tr>
                 <td>{{ prop.run_date }}</td>
                 <td>{{ prop.property_name }}</td>
+                <td>{{ prop.notes }}</td>
             </tr>
         {% endfor %}
     </table>

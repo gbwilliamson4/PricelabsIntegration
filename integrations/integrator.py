@@ -44,8 +44,9 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
         pricelabls_data = get_pricelabs_data(pricelabs_api_key,
                                              pricelabs_id)  # will return a dict with date as key and price as value
         moto_data_to_add = compare_prices(motopress_data, pricelabls_data, rates_request, basic)
-        create_rate(moto_data_to_add, rates_request, basic, accomodation_id, rates_id)
+        response = create_rate(moto_data_to_add, rates_request, basic, accomodation_id, rates_id)
 
+        return response
     else:
         pass
         # *** For Testing ***
@@ -62,8 +63,9 @@ def integrate(testing, moto_key, moto_secret, season_request, rates_request, pri
                                              pricelabs_id)  # will return a dict with date as key and price as value
 
         moto_data_to_add = compare_prices(motopress_data, pricelabls_data, rates_request, basic)
-        create_rate(moto_data_to_add, rates_request, basic, accomodation_id, rates_id)
+        response = create_rate(moto_data_to_add, rates_request, basic, accomodation_id, rates_id)
 
+        return response
         # *** End testing ***
 
 

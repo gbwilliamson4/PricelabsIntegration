@@ -34,6 +34,7 @@ class Property_Info(models.Model):
 class History(models.Model):
     run_date = models.DateField(auto_now_add=True)
     property_name = models.ForeignKey(Property, on_delete=models.CASCADE)
+    notes = models.CharField(max_length=50, blank=True)
 
     class Meta:
         verbose_name_plural = "History"

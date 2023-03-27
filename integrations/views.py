@@ -86,7 +86,7 @@ def property_detail(request, prop_pk):
         return redirect('properties')
     else:
         property_info = Property_Info.objects.get(property=prop)
-        prop_history = History.objects.filter(property_name=prop)
+        prop_history = History.objects.filter(property_name=prop).order_by('-run_date')
 
         # print(property_info)
         context = {'property_info': property_info, 'prop_history': prop_history}
@@ -115,9 +115,14 @@ def run_integrator(request, prop_pk, info_pk):
         motopress_rates_request = prop_info.motopress_rates_request
         accomodation_id = prop_info.accomodation_id
 
-        integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
+        response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
                   pricelabs_key, pricelabs_id, accomodation_id)
         history = History(property_name=prop)
+        if response.status_code == 200:
+            history.notes = 'Success'
+        else:
+            history.notes = 'Fail'
+
         history.save()
         return redirect('property-detail', prop_pk)
     # return redirect('property-detail', args=[1])
