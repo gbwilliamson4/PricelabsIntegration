@@ -116,7 +116,7 @@ def run_integrator(request, prop_pk, info_pk):
         accomodation_id = prop_info.accomodation_id
 
         response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                  pricelabs_key, pricelabs_id, accomodation_id)
+                             pricelabs_key, pricelabs_id, accomodation_id)
         history = History(property_name=prop)
         if response.status_code == 200:
             history.notes = 'Success'
@@ -126,3 +126,39 @@ def run_integrator(request, prop_pk, info_pk):
         history.save()
         return redirect('property-detail', prop_pk)
     # return redirect('property-detail', args=[1])
+
+
+def run_bearadise(request):
+    prop = Property.objects.get(pk=1)
+
+    prop_info = Property_Info.objects.get(property=prop)
+    pricelabs_key = prop_info.pricelabs_key
+    pricelabs_id = prop_info.pricelabs_id
+    motopress_key = prop_info.motopress_key
+    motopress_secret = prop_info.motopress_secret
+    motopress_season_request = prop_info.motopress_season_request
+    motopress_rates_request = prop_info.motopress_rates_request
+    accomodation_id = prop_info.accomodation_id
+
+    print("pricelabs_key", pricelabs_key)
+    print("pricelabs_id", pricelabs_id)
+    print("motopress_key", motopress_key)
+    print("motopress_secret", motopress_secret)
+    print("motopress_season_request", motopress_season_request)
+    print("motopress_rates_request", motopress_rates_request)
+    print("accomodation_id", accomodation_id)
+
+    # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
+    response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
+                         pricelabs_key, pricelabs_id, accomodation_id)
+    history = History(property_name=prop)
+    if response.status_code == 200:
+        history.notes = 'Success'
+    else:
+        history.notes = 'Fail'
+
+    history.save()
+    # ** end of copy **
+
+    context = {}
+    return render(request, 'integrations/run-bearadise.html', context)

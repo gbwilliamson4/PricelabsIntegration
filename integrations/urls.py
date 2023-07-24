@@ -8,5 +8,6 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     path('properties/', views.properties, name='properties'),
     path('properties/<int:prop_pk>/', views.property_detail, name='property-detail'),
-    path('properties/<int:prop_pk>/<int:info_pk>/integrator/', views.run_integrator, name='run-integrator')
+    path('properties/<int:prop_pk>/<int:info_pk>/integrator/', views.run_integrator, name='run-integrator'),
+    path('properties/cron/runbearadise', views.run_bearadise, name='run_bearadise')
 ]
