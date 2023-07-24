@@ -140,24 +140,24 @@ def run_bearadise(request):
     motopress_rates_request = prop_info.motopress_rates_request
     accomodation_id = prop_info.accomodation_id
 
-    print("pricelabs_key", pricelabs_key)
-    print("pricelabs_id", pricelabs_id)
-    print("motopress_key", motopress_key)
-    print("motopress_secret", motopress_secret)
-    print("motopress_season_request", motopress_season_request)
-    print("motopress_rates_request", motopress_rates_request)
-    print("accomodation_id", accomodation_id)
-
+    # print("pricelabs_key", pricelabs_key)
+    # print("pricelabs_id", pricelabs_id)
+    # print("motopress_key", motopress_key)
+    # print("motopress_secret", motopress_secret)
+    # print("motopress_season_request", motopress_season_request)
+    # print("motopress_rates_request", motopress_rates_request)
+    # print("accomodation_id", accomodation_id)
+    print("running integrator from run_bearadise endpoint.")
     # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
-    # response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-    #                      pricelabs_key, pricelabs_id, accomodation_id)
-    # history = History(property_name=prop)
-    # if response.status_code == 200:
-    #     history.notes = 'Success'
-    # else:
-    #     history.notes = 'Fail'
-    #
-    # history.save()
+    response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
+                         pricelabs_key, pricelabs_id, accomodation_id)
+    history = History(property_name=prop)
+    if response.status_code == 200:
+        history.notes = 'Success'
+    else:
+        history.notes = 'Fail'
+
+    history.save()
     # ** end of copy **
 
     context = {}
