@@ -149,15 +149,15 @@ def run_bearadise(request):
     print("accomodation_id", accomodation_id)
 
     # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
-    response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                         pricelabs_key, pricelabs_id, accomodation_id)
-    history = History(property_name=prop)
-    if response.status_code == 200:
-        history.notes = 'Success'
-    else:
-        history.notes = 'Fail'
-
-    history.save()
+    # response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
+    #                      pricelabs_key, pricelabs_id, accomodation_id)
+    # history = History(property_name=prop)
+    # if response.status_code == 200:
+    #     history.notes = 'Success'
+    # else:
+    #     history.notes = 'Fail'
+    #
+    # history.save()
     # ** end of copy **
 
     context = {}
