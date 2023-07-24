@@ -147,7 +147,9 @@ def run_bearadise(request):
     # print("motopress_season_request", motopress_season_request)
     # print("motopress_rates_request", motopress_rates_request)
     # print("accomodation_id", accomodation_id)
+
     print("running integrator from run_bearadise endpoint.")
+
     # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
     response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
                          pricelabs_key, pricelabs_id, accomodation_id)
