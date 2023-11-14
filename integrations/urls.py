@@ -9,5 +9,6 @@ urlpatterns = [
     path('properties/', views.properties, name='properties'),
     path('properties/<int:prop_pk>/', views.property_detail, name='property-detail'),
     path('properties/<int:prop_pk>/<int:info_pk>/integrator/', views.run_integrator, name='run-integrator'),
-    path('properties/cron/runbearadise', views.run_bearadise, name='run_bearadise')
+    path('properties/cron/runbearadise', views.run_bearadise, name='run_bearadise'),
+    path('properties/cron/runnoquebay', views.run_noquebay, name='run_noquebay')
 ]

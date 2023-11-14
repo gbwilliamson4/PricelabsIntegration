@@ -101,6 +101,8 @@ def run_integrator(request, prop_pk, info_pk):
     print('this is running from within the run_integrator function')
 
     prop = Property.objects.get(pk=prop_pk)
+    property_name = prop.property_name
+    print(property_name)
 
     if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
@@ -116,7 +118,7 @@ def run_integrator(request, prop_pk, info_pk):
         accomodation_id = prop_info.accomodation_id
 
         response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                             pricelabs_key, pricelabs_id, accomodation_id)
+                             pricelabs_key, pricelabs_id, accomodation_id, property_name)
         history = History(property_name=prop)
         if response.status_code == 200:
             history.notes = 'Success'
@@ -152,7 +154,7 @@ def run_bearadise(request):
 
     # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
     response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                         pricelabs_key, pricelabs_id, accomodation_id)
+                         pricelabs_key, pricelabs_id, accomodation_id, prop.property_name, )
     history = History(property_name=prop)
     if response.status_code == 200:
         history.notes = 'Success'
@@ -164,3 +166,34 @@ def run_bearadise(request):
 
     context = {}
     return render(request, 'integrations/run-bearadise.html', context)
+
+
+def run_noquebay(request):
+    for i in range(2, 4):
+        prop = Property.objects.get(pk=i)
+
+        prop_info = Property_Info.objects.get(property=prop)
+        pricelabs_key = prop_info.pricelabs_key
+        pricelabs_id = prop_info.pricelabs_id
+        motopress_key = prop_info.motopress_key
+        motopress_secret = prop_info.motopress_secret
+        motopress_season_request = prop_info.motopress_season_request
+        motopress_rates_request = prop_info.motopress_rates_request
+        accomodation_id = prop_info.accomodation_id
+
+        print("running integrator from run_noquebay endpoint.")
+
+        # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
+        response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
+                             pricelabs_key, pricelabs_id, accomodation_id, prop.property_name, )
+        history = History(property_name=prop)
+        if response.status_code == 200:
+            history.notes = 'Success'
+        else:
+            history.notes = 'Fail'
+
+        history.save()
+        # ** end of copy **
+
+    context = {}
+    return render(request, 'integrations/run-noquebay.html', context)
