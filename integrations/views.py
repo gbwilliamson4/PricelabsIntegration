@@ -171,6 +171,12 @@ def run_bearadise(request):
 def run_noquebay(request, prop_pk):
     prop = Property.objects.get(pk=prop_pk)
 
+    # Lets make sure first that this is running for a noquebay property.
+    # If its not, redirect back to properties
+    if prop.property_name[:8] != "Noquebay":
+        print("run_noquebay function triggered, but key does not match a Noquebay property")
+        return redirect('properties')
+
     prop_info = Property_Info.objects.get(property=prop)
     pricelabs_key = prop_info.pricelabs_key
     pricelabs_id = prop_info.pricelabs_id
