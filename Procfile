@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn dynamic_pricing.wsgi
+web: python manage.py migrate && gunicorn dynamic_pricing.wsgi --timeout 500
