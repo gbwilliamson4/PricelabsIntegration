@@ -7,13 +7,16 @@
     <meta charset="UTF-8">
     <title>Properties</title>
 </head>
+
 <body>
-This is the properties page.
-<br>
-{% for property in all_properties %}
-    <a href="{% url 'property-detail' prop_pk=property.pk %}">{{ property.property_name }}</a>
-    <br>
-{% endfor %}
+    <div class="container">
+        This is the properties page.
+        <br>
+        {% for property in all_properties %}
+            <a href="{% url 'property-detail' prop_pk=property.pk %}">{{ property.property_name }}</a>
+            <br>
+        {% endfor %}
+    </div>
 </body>
 </html>
 
