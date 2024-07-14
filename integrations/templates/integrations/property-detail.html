@@ -15,22 +15,22 @@
 <h4>{{ property_info.property }}</h4>
 
 <table>
-    <tr>
-        <td>Pricelabs API Key: </td>
-        <td>{{ property_info.pricelabs_key }}</td>
-    </tr>
-    <tr>
-        <td>Pricelabs ID: </td>
-        <td>{{ property_info.pricelabs_id }}</td>
-    </tr>
-    <tr>
-        <td>Motopress Key: </td>
-        <td>{{ property_info.motopress_key }}</td>
-    </tr>
-    <tr>
-        <td>Motopress Secret: </td>
-        <td>{{ property_info.motopress_secret }}</td>
-    </tr>
+<!--    <tr>-->
+<!--        <td>Pricelabs API Key: </td>-->
+<!--        <td>{{ property_info.pricelabs_key }}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <td>Pricelabs ID: </td>-->
+<!--        <td>{{ property_info.pricelabs_id }}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <td>Motopress Key: </td>-->
+<!--        <td>{{ property_info.motopress_key }}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <td>Motopress Secret: </td>-->
+<!--        <td>{{ property_info.motopress_secret }}</td>-->
+<!--    </tr>-->
     <tr>
         <td>Season Request: </td>
         <td>{{ property_info.motopress_season_request }}</td>
@@ -46,6 +46,14 @@
     <tr>
         <td>Notes: </td>
         <td>{{ property_info.property_notes }}</td>
+    </tr>
+    <tr>
+        <td>Calendar Sync URL: </td>
+        <td>{{sync_calendar_info.sync_url}}</td>
+    </tr>
+    <tr>
+        <td>User: </td>
+        <td>{{sync_calendar_info.wp_login}}</td>
     </tr>
 </table>
 

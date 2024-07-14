@@ -84,13 +84,14 @@ def property_detail(request, prop_pk):
 
     if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
-    else:
-        property_info = Property_Info.objects.get(property=prop)
-        prop_history = History.objects.filter(property_name=prop).order_by('-run_date')
 
-        # print(property_info)
-        context = {'property_info': property_info, 'prop_history': prop_history}
-        return render(request, 'integrations/property-detail.html', context)
+    property_info = Property_Info.objects.get(property=prop)
+    prop_history = History.objects.filter(property_name=prop).order_by('-run_date')
+    sync_calendar_info = CalendarSyncInfo.objects.get(property=prop)
+
+    # print(property_info)
+    context = {'property_info': property_info, 'prop_history': prop_history, 'sync_calendar_info': sync_calendar_info}
+    return render(request, 'integrations/property-detail.html', context)
 
 
 @login_required
