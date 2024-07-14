@@ -38,3 +38,14 @@ class History(models.Model):
 
     class Meta:
         verbose_name_plural = "History"
+
+
+class CalendarSyncInfo(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    wp_login = models.CharField(max_length=500)
+    sync_url = models.CharField(max_length=500)
+    username = models.CharField(max_length=50)
+    password = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.wp_login
