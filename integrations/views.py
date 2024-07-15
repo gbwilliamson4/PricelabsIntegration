@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from .integrator import integrate
+from .sync_calendars import SyncCalendars
 
 
 def index(request):
@@ -84,13 +85,14 @@ def property_detail(request, prop_pk):
 
     if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
-    else:
-        property_info = Property_Info.objects.get(property=prop)
-        prop_history = History.objects.filter(property_name=prop).order_by('-run_date')
 
-        # print(property_info)
-        context = {'property_info': property_info, 'prop_history': prop_history}
-        return render(request, 'integrations/property-detail.html', context)
+    property_info = Property_Info.objects.get(property=prop)
+    prop_history = History.objects.filter(property_name=prop).order_by('-run_date')
+    sync_calendar_info = CalendarSyncInfo.objects.get(property=prop)
+
+    # print(property_info)
+    context = {'property_info': property_info, 'prop_history': prop_history, 'sync_calendar_info': sync_calendar_info}
+    return render(request, 'integrations/property-detail.html', context)
 
 
 @login_required
@@ -166,6 +168,26 @@ def run_bearadise(request):
 
     context = {}
     return render(request, 'integrations/run-bearadise.html', context)
+
+
+# Loops though each Property. If it has a CalendarSyncInfo, then it will run the calendar sync.
+# If not, it will skip. Returns 200 status code on completion.
+def sync_calendars(request):
+    for prop in Property.objects.all():
+        print(prop.property_name)
+
+        try:
+            calendar_sync_info = CalendarSyncInfo.objects.get(property=prop)
+
+            calendar_sync = SyncCalendars(calendar_sync_info.wp_login, calendar_sync_info.sync_url,
+                                          calendar_sync_info.username, calendar_sync_info.password)
+            response = calendar_sync.send_sync_request()
+
+        except CalendarSyncInfo.DoesNotExist:
+            print(f'{prop.property_name} does not have a CalendarSyncInfo.')
+            continue
+
+    return HttpResponse(status=200)
 
 
 def run_noquebay(request, prop_pk):
