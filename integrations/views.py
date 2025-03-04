@@ -191,13 +191,14 @@ def sync_calendars(request):
 
 
 def run_noquebay(request, prop_pk):
-    prop = Property.objects.get(pk=prop_pk)
+    print("run_noquebay was triggered, this was likely by mistake.")
+    print("noquebay info was purposely taken out.")
+    pass
 
-    # Lets make sure first that this is running for a noquebay property.
-    # If its not, redirect back to properties
-    if prop.property_name[:8] != "Noquebay":
-        print("run_noquebay function triggered, but key does not match a Noquebay property")
-        return redirect('properties')
+def sync_pricelabs_data(request, prop_pk):
+    print(f"Running sync_pricelabs_data for the following primary key: {prop_pk}")
+
+    prop = Property.objects.get(pk=prop_pk)
 
     prop_info = Property_Info.objects.get(property=prop)
     pricelabs_key = prop_info.pricelabs_key
@@ -208,7 +209,7 @@ def run_noquebay(request, prop_pk):
     motopress_rates_request = prop_info.motopress_rates_request
     accomodation_id = prop_info.accomodation_id
 
-    print("running integrator from run_noquebay endpoint.")
+    print(f"running integrator from sync_pricelabs_data endpoint for {prop.property_name}.")
 
     # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
     response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
@@ -222,5 +223,5 @@ def run_noquebay(request, prop_pk):
     history.save()
     # ** end of copy **
 
-    context = {}
-    return render(request, 'integrations/run-noquebay.html', context)
+    context = {"prop_pk": prop_pk}
+    return render(request, 'integrations/sync-pricelabs-data.html', context)
