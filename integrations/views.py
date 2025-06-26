@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 
 from .forms import *
@@ -100,7 +100,6 @@ def property_detail(request, prop_pk):
 @login_required
 def run_integrator(request, prop_pk, info_pk):
     info = Property_Info.objects.get(pk=info_pk)
-
     prop = Property.objects.get(pk=prop_pk)
     property_name = prop.property_name
 
@@ -108,64 +107,10 @@ def run_integrator(request, prop_pk, info_pk):
 
     if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
-    else:
-        prop_info = Property_Info.objects.get(property=prop)
-        pricelabs_key = prop_info.pricelabs_key
-        pricelabs_id = prop_info.pricelabs_id
-        motopress_key = prop_info.motopress_key
-        motopress_secret = prop_info.motopress_secret
-        motopress_season_request = prop_info.motopress_season_request
-        motopress_rates_request = prop_info.motopress_rates_request
-        accomodation_id = prop_info.accomodation_id
 
-        response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                             pricelabs_key, pricelabs_id, accomodation_id, property_name)
-        history = History(property_name=prop)
-        if response.status_code == 200:
-            history.notes = 'Success'
-        else:
-            history.notes = 'Fail'
+    run_property_sync(prop)
 
-        history.save()
-        return redirect('property-detail', prop_pk)
-
-
-def run_bearadise(request):
-    prop = Property.objects.get(pk=1)
-
-    prop_info = Property_Info.objects.get(property=prop)
-    pricelabs_key = prop_info.pricelabs_key
-    pricelabs_id = prop_info.pricelabs_id
-    motopress_key = prop_info.motopress_key
-    motopress_secret = prop_info.motopress_secret
-    motopress_season_request = prop_info.motopress_season_request
-    motopress_rates_request = prop_info.motopress_rates_request
-    accomodation_id = prop_info.accomodation_id
-
-    # print("pricelabs_key", pricelabs_key)
-    # print("pricelabs_id", pricelabs_id)
-    # print("motopress_key", motopress_key)
-    # print("motopress_secret", motopress_secret)
-    # print("motopress_season_request", motopress_season_request)
-    # print("motopress_rates_request", motopress_rates_request)
-    # print("accomodation_id", accomodation_id)
-
-    print("running integrator from run_bearadise endpoint.")
-
-    # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
-    response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                         pricelabs_key, pricelabs_id, accomodation_id, prop.property_name, )
-    history = History(property_name=prop)
-    if response.status_code == 200:
-        history.notes = 'Success'
-    else:
-        history.notes = 'Fail'
-
-    history.save()
-    # ** end of copy **
-
-    context = {}
-    return render(request, 'integrations/run-bearadise.html', context)
+    return redirect('property-detail', prop_pk)
 
 
 # Loops though each Property. If it has a CalendarSyncInfo, then it will run the calendar sync.
@@ -188,34 +133,36 @@ def sync_calendars(request):
 
     return HttpResponse(status=200)
 
-
 def sync_pricelabs_data(request, prop_pk):
-    logger.info(f"Running sync_pricelabs_data for the following primary key: {prop_pk}")
-
     prop = Property.objects.get(pk=prop_pk)
-
-    prop_info = Property_Info.objects.get(property=prop)
-    pricelabs_key = prop_info.pricelabs_key
-    pricelabs_id = prop_info.pricelabs_id
-    motopress_key = prop_info.motopress_key
-    motopress_secret = prop_info.motopress_secret
-    motopress_season_request = prop_info.motopress_season_request
-    motopress_rates_request = prop_info.motopress_rates_request
-    accomodation_id = prop_info.accomodation_id
+    logger.info(f"Running sync_pricelabs_data for the following primary key: {prop_pk}. {prop.property_name}")
 
     logger.info(f"running integrator from sync_pricelabs_data endpoint for {prop.property_name}.")
-
-    # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
-    response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
-                         pricelabs_key, pricelabs_id, accomodation_id, prop.property_name, )
-    history = History(property_name=prop)
-    if response.status_code == 200:
-        history.notes = 'Success'
-    else:
-        history.notes = 'Fail'
-
-    history.save()
-    # ** end of copy **
+    run_property_sync(prop)
 
     context = {"prop_pk": prop_pk}
     return render(request, 'integrations/sync-pricelabs-data.html', context)
+
+def run_property_sync(prop):
+    """
+    Handles syncing for a single Property by running the integrator and logging the result in History.
+    """
+    prop_info = Property_Info.objects.get(property=prop)
+
+    response = integrate(
+        False,
+        prop_info.motopress_key,
+        prop_info.motopress_secret,
+        prop_info.motopress_season_request,
+        prop_info.motopress_rates_request,
+        prop_info.pricelabs_key,
+        prop_info.pricelabs_id,
+        prop_info.accomodation_id,
+        prop.property_name
+    )
+
+    history = History(property_name=prop)
+    history.notes = 'Success' if response.status_code == 200 else 'Fail'
+    history.save()
+
+    return response
