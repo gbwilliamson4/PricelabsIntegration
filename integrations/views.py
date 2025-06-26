@@ -1,8 +1,5 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-# from psycopg2 import IntegrityError
-from sqlite3 import IntegrityError
-from django.contrib.auth.decorators import login_required
 
 from .forms import *
 from .models import *
@@ -13,17 +10,21 @@ from django.contrib import messages
 from .integrator import integrate
 from .sync_calendars import SyncCalendars
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def index(request):
     # If user is authenticated, navigate to properties page. else, go to login.
     if request.user.is_authenticated:
-        print('user is authenticated.')
+        logger.info(f"current user is: {request.user.username}")
         if request.user.is_staff:
-            print('user is staff')
+            logger.info(f'{request.user.username} is staff')
         return redirect('properties')
 
     else:
-        print('not authenticated.')
+        logger.info('not authenticated.')
         return redirect('login-user')
 
 
@@ -36,6 +37,7 @@ def login_user(request):
             login(request, user)
             # Redirect to a success page.
             messages.success(request, "Login Successful.")
+            logger.info(f"User has logged in. {request.user.username}")
             return redirect('index')
         else:
             messages.error(request, 'Invalid username/password combination.')
@@ -87,10 +89,10 @@ def property_detail(request, prop_pk):
         return redirect('properties')
 
     property_info = Property_Info.objects.get(property=prop)
-    prop_history = History.objects.filter(property_name=prop).order_by('-run_date')
+    prop_history = History.objects.filter(property_name=prop).order_by('-run_date')[:30]
     sync_calendar_info = CalendarSyncInfo.objects.get(property=prop)
 
-    # print(property_info)
+    logger.info(f"Navigating to property_detail. {property_info}")
     context = {'property_info': property_info, 'prop_history': prop_history, 'sync_calendar_info': sync_calendar_info}
     return render(request, 'integrations/property-detail.html', context)
 
@@ -98,18 +100,15 @@ def property_detail(request, prop_pk):
 @login_required
 def run_integrator(request, prop_pk, info_pk):
     info = Property_Info.objects.get(pk=info_pk)
-    # print(info)
-
-    print('this is running from within the run_integrator function')
 
     prop = Property.objects.get(pk=prop_pk)
     property_name = prop.property_name
-    print(property_name)
+
+    logger.info(f"Running integrator for property: {property_name} ID: {prop_pk}. This is from within the run_integrator function.")
 
     if prop.user != request.user and not request.user.is_staff:
         return redirect('properties')
     else:
-        print('property is', prop)
         prop_info = Property_Info.objects.get(property=prop)
         pricelabs_key = prop_info.pricelabs_key
         pricelabs_id = prop_info.pricelabs_id
@@ -129,7 +128,6 @@ def run_integrator(request, prop_pk, info_pk):
 
         history.save()
         return redirect('property-detail', prop_pk)
-    # return redirect('property-detail', args=[1])
 
 
 def run_bearadise(request):
@@ -173,8 +171,9 @@ def run_bearadise(request):
 # Loops though each Property. If it has a CalendarSyncInfo, then it will run the calendar sync.
 # If not, it will skip. Returns 200 status code on completion.
 def sync_calendars(request):
+    logger.info(f"running sync_calendars.")
     for prop in Property.objects.all():
-        print(prop.property_name)
+        logger.info(f"Current property is: {prop.property_name}. Will attempt to sync calendars.")
 
         try:
             calendar_sync_info = CalendarSyncInfo.objects.get(property=prop)
@@ -184,19 +183,14 @@ def sync_calendars(request):
             response = calendar_sync.send_sync_request()
 
         except CalendarSyncInfo.DoesNotExist:
-            print(f'{prop.property_name} does not have a CalendarSyncInfo.')
+            logger.info(f'{prop.property_name} does not have a CalendarSyncInfo.')
             continue
 
     return HttpResponse(status=200)
 
 
-def run_noquebay(request, prop_pk):
-    print("run_noquebay was triggered, this was likely by mistake.")
-    print("noquebay info was purposely taken out.")
-    pass
-
 def sync_pricelabs_data(request, prop_pk):
-    print(f"Running sync_pricelabs_data for the following primary key: {prop_pk}")
+    logger.info(f"Running sync_pricelabs_data for the following primary key: {prop_pk}")
 
     prop = Property.objects.get(pk=prop_pk)
 
@@ -209,7 +203,7 @@ def sync_pricelabs_data(request, prop_pk):
     motopress_rates_request = prop_info.motopress_rates_request
     accomodation_id = prop_info.accomodation_id
 
-    print(f"running integrator from sync_pricelabs_data endpoint for {prop.property_name}.")
+    logger.info(f"running integrator from sync_pricelabs_data endpoint for {prop.property_name}.")
 
     # Below this is copied directly from the run_integrator function above. I know it doesn't meet DRY standards.
     response = integrate(False, motopress_key, motopress_secret, motopress_season_request, motopress_rates_request,
