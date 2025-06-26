@@ -1,17 +1,28 @@
-{% extends "integrations/base.html" %}
-{% block content %}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Logout</title>
-</head>
-<body>
-<div class="container p-5 my-5 text-center">
-    <h4>You have been successfully logged out. Please come again soon.</h4>
+{% extends "integrations/base.html" %} {% block content %}
+<div
+  class="container d-flex align-items-center justify-content-center min-vh-100"
+>
+  <div
+    class="card shadow-lg p-4 text-center"
+    style="max-width: 400px; width: 100%"
+  >
+    <div class="card-body">
+      <div class="alert alert-success mb-4" role="alert">
+        <h4 class="alert-heading">Logged Out</h4>
+        <p>You have been successfully logged out. Please come again soon.</p>
+      </div>
+      <div class="mb-2">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Redirecting...</span>
+        </div>
+      </div>
+      <p class="text-muted">Redirecting to login page...</p>
+    </div>
+  </div>
 </div>
-</body>
-</html>
-
+<script>
+  setTimeout(function () {
+    window.location.href = "{% url 'login-user' %}";
+  }, 1000);
+</script>
 {% endblock content %}

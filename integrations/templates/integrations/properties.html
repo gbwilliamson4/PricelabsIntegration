@@ -1,23 +1,31 @@
-{% extends "integrations/base.html" %}
-{% block content %}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Properties</title>
-</head>
-
-<body>
-    <div class="container">
-        This is the properties page.
-        <br>
-        {% for property in all_properties %}
-            <a href="{% url 'property-detail' prop_pk=property.pk %}">{{ property.property_name }}</a>
-            <br>
-        {% endfor %}
+{% extends "integrations/base.html" %} {% block content %}
+<div class="container py-5">
+  <h2 class="mb-4 text-center">Your Properties</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          {% if all_properties %}
+          <ul class="list-group list-group-flush">
+            {% for property in all_properties %}
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <span>{{ property.property_name }}</span>
+              <a
+                href="{% url 'property-detail' prop_pk=property.pk %}"
+                class="btn btn-outline-primary btn-sm"
+                >View Details</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-center text-muted mb-0">No properties found.</p>
+          {% endif %}
+        </div>
+      </div>
     </div>
-</body>
-</html>
-
+  </div>
+</div>
 {% endblock content %}
