@@ -1,4 +1,7 @@
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SyncCalendars:
     def __init__(self, wp_login_url, sync_url, username, password):
@@ -8,6 +11,7 @@ class SyncCalendars:
         self.password = password
 
     def send_sync_request(self):
+        logger.info(f"Starting calendar sync. {self.sync_url} {self.username}")
         with requests.Session() as s:
             headers1 = {'Cookie': 'wordpress_test_cookie=WP Cookie check'}
             datas = {
@@ -16,5 +20,5 @@ class SyncCalendars:
             }
             s.post(self.wp_login_url, headers=headers1, data=datas)
             resp = s.post(self.sync_url)
-            print(resp.status_code)
+            logger.info(f"Response from send_sync_request to sync calendars: {resp.status_code} URL: {self.sync_url}")
             return resp.status_code
