@@ -11,6 +11,9 @@ class Property(models.Model):
 
     class Meta:
         verbose_name_plural = "Properties"
+        indexes = [
+            models.Index(fields=["user", "property_name"]),
+        ]
 
 
 class Property_Info(models.Model):
@@ -38,6 +41,9 @@ class History(models.Model):
 
     class Meta:
         verbose_name_plural = "History"
+        indexes = [
+            models.Index(fields=["property_name", "run_date"]),
+        ]
 
 
 class CalendarSyncInfo(models.Model):
