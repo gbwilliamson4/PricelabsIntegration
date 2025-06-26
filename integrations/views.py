@@ -35,15 +35,12 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            # Redirect to a success page.
-            messages.success(request, "Login Successful.")
             logger.info(f"User has logged in. {request.user.username}")
             return redirect('index')
         else:
             messages.error(request, 'Invalid username/password combination.')
             return redirect('login-user')
     else:
-        # messages.error(request, 'Problem! Sooo many problems!')
         return render(request, 'integrations/login.html', {})
 
 
@@ -55,7 +52,6 @@ def signup_user(request):
             user = form.save()
 
             login(request, user)
-            messages.success(request, "Login Successful.")
             return redirect('index')
 
     else:
@@ -67,7 +63,6 @@ def signup_user(request):
 
 def logout_user(request):
     logout(request)
-    # messages.success(request, 'You have been successfully logged out. Please come again soon.')
     return render(request, 'integrations/logout.html', {})
 
 
