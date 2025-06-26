@@ -18,13 +18,13 @@ logger = logging.getLogger(__name__)
 def index(request):
     # If user is authenticated, navigate to properties page. else, go to login.
     if request.user.is_authenticated:
-        print('user is authenticated.')
+        logger.info(f"current user is: {request.user.username}")
         if request.user.is_staff:
-            print('user is staff')
+            logger.info(f'{request.user.username} is staff')
         return redirect('properties')
 
     else:
-        print('not authenticated.')
+        logger.info('not authenticated.')
         return redirect('login-user')
 
 
@@ -37,7 +37,7 @@ def login_user(request):
             login(request, user)
             # Redirect to a success page.
             messages.success(request, "Login Successful.")
-            logger.info(f"User has logged in. {request}")
+            logger.info(f"User has logged in. {request.user.username}")
             return redirect('index')
         else:
             messages.error(request, 'Invalid username/password combination.')
